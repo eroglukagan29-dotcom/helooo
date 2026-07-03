@@ -30,15 +30,20 @@
             box-shadow: 0 15px 35px rgba(255, 179, 198, 0.4);
             max-width: 380px;
             width: 90%;
+            height: 480px; /* Butonun rahat kaçabilmesi için sabit yükseklik verdik */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             position: relative;
             border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         h1, h2 {
             color: #ff5c8a;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             line-height: 1.4;
-            margin-bottom: 25px;
+            margin-top: 0;
+            margin-bottom: 15px;
             font-weight: 600;
         }
 
@@ -49,20 +54,18 @@
 
         .gif-container img {
             width: 100%;
-            max-width: 180px;
+            max-width: 160px;
             border-radius: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.05));
         }
 
-        .buttons {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin-top: 30px;
+        /* Butonların ilk duracağı alan */
+        .buttons-wrapper {
+            margin-top: auto;
+            margin-bottom: 10px;
+            height: 50px;
             position: relative;
-            height: 60px; /* Butonların hareket alanı burası olacak */
         }
 
         button {
@@ -78,7 +81,9 @@
             background-color: #ff758f;
             color: white;
             box-shadow: 0 6px 20px rgba(255, 117, 143, 0.4);
-            z-index: 2;
+            position: absolute;
+            left: 20px;
+            bottom: 0;
         }
 
         #yesBtn:hover {
@@ -90,27 +95,31 @@
             background-color: #ffe5ec;
             color: #ff758f;
             position: absolute;
-            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            right: 20px;
+            bottom: 0;
+            transition: all 0.15s ease-out;
             border: 1px solid #ffccd5;
+            z-index: 10;
         }
 
         .success-message {
             display: none;
+            margin: auto 0;
         }
     </style>
 </head>
 <body>
 
     <div class="container" id="mainContainer">
-        <div id="proposalStage">
+        <div id="proposalStage" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
             <div class="gif-container">
                 <img src="https://media.tenor.com/w9Gf0zI4V2AAAAAi/tkthao219-bubududu.gif" alt="Cute GIF">
             </div>
-            <h1>Nisa, benimle çıkıp büyük bir aşk yaşamaya var mısın? 🌹✨</h1>
+            <h1>Nisa, benimle çıkıp hayatıma renk katmaya var mısın? 🌹✨</h1>
             
-            <div class="buttons" id="btnWrapper">
+            <div class="buttons-wrapper">
                 <button id="yesBtn" onclick="celebrate()">Evet! 😍</button>
-                <button id="noBtn" onmouseover="moveButton()" onclick="moveButton()">Hayır 😢</button>
+                <button id="noBtn" onmouseenter="moveButton()" onclick="moveButton()">Hayır 😢</button>
             </div>
         </div>
 
@@ -124,35 +133,30 @@
     </div>
 
     <script>
-        // Hayır butonunun sadece buton alanında (buttons) kaçmasını sağlayan akıllı fonksiyon
         function moveButton() {
             const noBtn = document.getElementById('noBtn');
-            const wrapper = document.getElementById('btnWrapper');
+            const container = document.getElementById('mainContainer');
             
-            // Kutu içi sınırları hesapla
-            const maxX = wrapper.clientWidth - noBtn.offsetWidth;
-            const maxY = wrapper.clientHeight - noBtn.offsetHeight;
+            // Buton artık ana beyaz kartın (container) içinde her yere kaçabilir
+            // Kartın iç padding değerlerini hesaba katarak taşmayı önlüyoruz
+            const padding = 30;
+            const maxX = container.clientWidth - noBtn.offsetWidth - padding;
+            const maxY = container.clientHeight - noBtn.offsetHeight - padding;
             
-            // Rastgele ama mantıklı sınırlar içinde yeni koordinat üret
-            const randomX = Math.floor(Math.random() * maxX);
-            const randomY = Math.floor(Math.random() * maxY) - 10; // Biraz yukarı aşağı oynama payı
+            // Rastgele yeni konum (en az padding kadar içeride kalacak şekilde)
+            let randomX = Math.floor(Math.random() * (maxX - padding)) + padding;
+            let randomY = Math.floor(Math.random() * (maxY - padding)) + padding;
             
+            // Butonu ana container'a göre konumlandırabilmek için absolute moduna tam geçiriyoruz
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
-        }
-
-        // İlk başta butonun yerini düzgün sabitlemek için sıfırlayalım
-        window.onload = function() {
-            const noBtn = document.getElementById('noBtn');
-            noBtn.style.right = '20px';
-            noBtn.style.top = '10px';
+            noBtn.style.right = 'auto';
+            noBtn.style.bottom = 'auto';
         }
 
         function celebrate() {
-            document.getElementById('proposalStage').style.display = 'none';
+            document.getElementById('proposalStage').style.setProperty('display', 'none', 'important');
             document.getElementById('successStage').style.display = 'block';
-            
-            // Arka planı daha da tatlı, sıcak bir pembeye geçiriyoruz
             document.body.style.background = "linear-gradient(135deg, #ffe5ec, #ffb3c6)";
         }
     </script>
